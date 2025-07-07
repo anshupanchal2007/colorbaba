@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Deposit - ColorBaba</title>
+</head>
+<body>
+  <h2>Deposit ₹100 or more</h2>
+
+  <!-- Your QR code image -->
+  <img src="assets/qr.png" alt="Scan QR" width="200"><br><br>
+
+  <!-- Deposit Form -->
+  <form id="depositForm">
+    <input type="text" id="name" placeholder="Your Name" required><br><br>
+    <input type="text" id="phone" placeholder="Phone Number" required><br><br>
+    <input type="number" id="amount" placeholder="Amount (₹100 min)" required><br><br>
+    <button type="submit">I have paid</button>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5yRIsB7Lh4MTXxoGQBrbLM9PYK72d_OQ",
+      authDomain: "colorbaba-2ec15.firebaseapp.com",
+      projectId: "colorbaba-2ec15",
+      storageBucket: "colorbaba-2ec15.firebasestorage.app",
+      messagingSenderId: "135966403197",
+      appId: "1:135966403197:web:0de9788d19c75414f6df14"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const form = document.getElementById('depositForm');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = form.name.value;
+      const phone = form.phone.value;
+      const amount = parseInt(form.amount.value);
+
+      if (amount < 100) {
+        alert("Minimum deposit is ₹100");
+        return;
+      }
+
+      const depositRef = ref(db, 'deposits');
+      push(depositRef, {
+        name,
+        phone,
+        amount,
+        status: 'pending',
+        time: new Date().toISOString()
+      }).then(() => {
+        alert("Deposit request submitted successfully!");
+        form.reset();
+      });
+    });
+  </script>
+</body>
+</html>
